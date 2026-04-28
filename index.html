@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LastBite | Turning Food Waste into Opportunity</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Iconify Icons -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'lastbite': {
+                            bg: '#050505',
+                            card: '#111111',
+                            accent: '#FF4500',
+                            surface: '#1a1a1a',
+                            muted: '#2a2a2a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #FF4500;
+            --card: #111111;
+            --surface: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: white;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Noise Overlay */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0.04;
+            mix-blend-mode: overlay;
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+        }
+
+        /* Floating Animation */
+        @keyframes float-gentle {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(1deg);
+            }
+        }
+
+        @keyframes float-gentle-reverse {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(15px) rotate(-1deg);
+            }
+        }
+
+        .animate-float {
+            animation: float-gentle 10s ease-in-out infinite;
+        }
+
+        .animate-float-reverse {
+            animation: float-gentle-reverse 12s ease-in-out infinite;
+        }
+
+        /* Glow Effects */
+        .glow-accent {
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.15);
+        }
+
+        .glow-accent-hover:hover {
+            box-shadow: 0 0 60px rgba(255, 69, 0, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF4500;
+        }
+
+        /* Card Hover */
+        .card-hover {
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        /* Button Click Feedback */
+        a.clicked {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #FF4500 0%, #ff6b35 50%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Pulse Animation for Live Indicators */
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        .pulse-live {
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        /* Countdown Timer Style */
+        .timer-digit {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Smooth Image Reveal */
+        .img-reveal {
+            clip-path: inset(0 100% 0 0);
+            transition: clip-path 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .img-reveal.active {
+            clip-path: inset(0 0 0 0);
+        }
+
+        /* Stagger Children */
+        .stagger-children>* {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stagger-children.active>*:nth-child(1) {
+            transition-delay: 0ms;
+        }
+
+        .stagger-children.active>*:nth-child(2) {
+            transition-delay: 100ms;
+        }
+
+        .stagger-children.active>*:nth-child(3) {
+            transition-delay: 200ms;
+        }
+
+        .stagger-children.active>*:nth-child(4) {
+            transition-delay: 300ms;
+        }
+
+        .stagger-children.active>* {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Parallax */
+        .parallax-slow {
+            will-change: transform;
+        }
+    </style>
+    <!-- Removed base target="_blank" to allow anchor links to work on same page -->
+    <!-- <base target="_blank"> -->
+</head>
+
+<body>
+    <div class="min-h-screen bg-lastbite-bg selection:bg-[#FF4500] selection:text-white">
+        <!-- Noise Overlay -->
+        <div class="noise-overlay"></div>
+
+        <!-- Navigation -->
+        <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 py-6">
+            <div class="container mx-auto px-6 flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-[#FF4500] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <iconify-icon icon="lucide:leaf" class="text-white text-xl"></iconify-icon>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tighter font-serif">LastBite.</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#problem" class="text-sm text-gray-400 hover:text-white transition-colors duration-300">The
+                        Problem</a>
+                    <a href="#solution"
+                        class="text-sm text-gray-400 hover:text-white transition-colors duration-300">Solution</a>
+                    <a href="#how-it-works"
+                        class="text-sm text-gray-400 hover:text-white transition-colors duration-300">How It Works</a>
+                    <a href="#impact"
+                        class="text-sm text-gray-400 hover:text-white transition-colors duration-300">Impact</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <a href="#" id="signin-btn"
+                        class="hidden sm:inline-flex text-sm text-gray-400 hover:text-white transition-colors">Sign
+                        In</a>
+                    <a href="#" id="get-started-nav"
+                        class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-medium bg-[#FF4500] text-white hover:scale-105 hover:bg-[#ff5722] transition-all duration-300 glow-accent-hover">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
+            <!-- Background Gradient Orbs -->
+            <div class="absolute inset-0 z-0 pointer-events-none">
+                <div
+                    class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#FF4500]/10 rounded-full blur-[120px]">
+                </div>
+                <div
+                    class="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-[#ff6b35]/8 rounded-full blur-[100px]">
+                </div>
+                <div
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-[#1a1a1a] rounded-full blur-[80px] opacity-50">
+                </div>
+            </div>
+
+            <!-- Floating Food Elements -->
+            <div
+                class="absolute left-[5%] top-[20%] w-24 h-24 opacity-20 animate-float pointer-events-none hidden lg:block">
+                <iconify-icon icon="lucide:apple" class="w-full h-full text-[#FF4500]"></iconify-icon>
+            </div>
+            <div class="absolute right-[8%] top-[15%] w-20 h-20 opacity-15 animate-float-reverse pointer-events-none hidden lg:block"
+                style="animation-delay: 2s;">
+                <iconify-icon icon="lucide:carrot" class="w-full h-full text-[#ffa500]"></iconify-icon>
+            </div>
+            <div class="absolute left-[10%] bottom-[25%] w-16 h-16 opacity-15 animate-float pointer-events-none hidden lg:block"
+                style="animation-delay: 4s;">
+                <iconify-icon icon="lucide:chef-hat" class="w-full h-full text-white"></iconify-icon>
+            </div>
+            <div class="absolute right-[12%] bottom-[20%] w-28 h-28 opacity-10 animate-float-reverse pointer-events-none hidden lg:block"
+                style="animation-delay: 1s;">
+                <iconify-icon icon="lucide:utensils" class="w-full h-full text-[#FF4500]"></iconify-icon>
+            </div>
+
+            <!-- Hero Content -->
+            <div class="container mx-auto px-6 relative z-20 text-center">
+                <div id="hero-content" class="max-w-4xl mx-auto">
+                    <!-- Badge -->
+                    <div class="reveal mb-8">
+                        <div
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 backdrop-blur-sm">
+                            <span class="w-2 h-2 rounded-full bg-[#FF4500] pulse-live"></span>
+                            <span class="text-xs uppercase tracking-widest text-[#FF4500]">Now Serving 500+
+                                Restaurants</span>
+                        </div>
+                    </div>
+
+                    <!-- Headline -->
+                    <div class="reveal" style="transition-delay: 100ms;">
+                        <h1
+                            class="text-5xl md:text-7xl lg:text-8xl font-medium leading-[1.05] tracking-tight mb-8 font-serif">
+                            Turning Food Waste<br />
+                            <span class="italic font-light gradient-text">into Opportunity.</span>
+                        </h1>
+                    </div>
+
+                    <!-- Subheadline -->
+                    <div class="reveal" style="transition-delay: 200ms;">
+                        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+                            Connect restaurants with surplus food to budget-conscious diners and NGOs.
+                            Every meal saved is a step toward zero waste.
+                        </p>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4"
+                        style="transition-delay: 300ms;">
+                        <a href="#" id="hero-get-started"
+                            class="group relative inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-semibold bg-[#FF4500] text-white hover:scale-105 transition-all duration-300 glow-accent-hover">
+                            <span>Start Saving Food</span>
+                            <iconify-icon icon="lucide:arrow-right"
+                                class="ml-2 group-hover:translate-x-1 transition-transform"></iconify-icon>
+                        </a>
+                        <a href="#how-it-works"
+                            class="inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-medium border border-white/20 text-white hover:bg-white/5 transition-all duration-300">
+                            <iconify-icon icon="lucide:play-circle" class="mr-2"></iconify-icon>
+                            See How It Works
+                        </a>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="reveal mt-20 grid grid-cols-3 gap-8 max-w-2xl mx-auto" style="transition-delay: 400ms;">
+                        <div class="text-center">
+                            <div class="text-3xl md:text-4xl font-bold font-serif text-white">12K+</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-widest mt-1">Meals Saved</div>
+                        </div>
+                        <div class="text-center border-x border-white/10">
+                            <div class="text-3xl md:text-4xl font-bold font-serif gradient-text">500+</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-widest mt-1">Restaurants</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl md:text-4xl font-bold font-serif text-white">45+</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-widest mt-1">NGO Partners</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500">
+                <span class="text-[10px] uppercase tracking-widest">Scroll</span>
+                <div class="w-px h-8 bg-gradient-to-b from-gray-500 to-transparent"></div>
+            </div>
+        </section>
+
+        <!-- Problem Section -->
+        <section id="problem" class="py-32 relative">
+            <div class="container mx-auto px-6">
+                <div class="max-w-6xl mx-auto">
+                    <div class="grid md:grid-cols-2 gap-16 items-center">
+                        <!-- Left: Content -->
+                        <div class="reveal">
+                            <div
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-red-500/30 bg-red-500/10 mb-6">
+                                <iconify-icon icon="lucide:alert-triangle" class="text-red-400 text-sm"></iconify-icon>
+                                <span class="text-xs uppercase tracking-widest text-red-400">The Problem</span>
+                            </div>
+
+                            <h2 class="text-4xl md:text-5xl lg:text-6xl leading-tight text-white/90 mb-8 font-serif">
+                                Every day, tons of edible food <span class="italic text-[#FF4500]">goes to waste.</span>
+                            </h2>
+
+                            <p class="text-lg text-gray-400 leading-relaxed mb-8">
+                                While restaurants discard surplus food at closing time, millions struggle to afford
+                                their next meal.
+                                NGOs lack real-time visibility into available food, creating a tragic disconnect.
+                            </p>
+
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4 p-4 rounded-2xl bg-[#111] border border-white/5">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                                        <iconify-icon icon="lucide:trash-2" class="text-red-400"></iconify-icon>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-white mb-1">1.3 Billion Tons Wasted</h4>
+                                        <p class="text-sm text-gray-500">Globally, one-third of all food produced is
+                                            lost or wasted annually.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4 p-4 rounded-2xl bg-[#111] border border-white/5">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                                        <iconify-icon icon="lucide:users" class="text-orange-400"></iconify-icon>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-white mb-1">828 Million Go Hungry</h4>
+                                        <p class="text-sm text-gray-500">People worldwide face food insecurity while
+                                            edible food is discarded.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4 p-4 rounded-2xl bg-[#111] border border-white/5">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center flex-shrink-0">
+                                        <iconify-icon icon="lucide:clock" class="text-yellow-400"></iconify-icon>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-white mb-1">NGOs Lack Real-Time Data</h4>
+                                        <p class="text-sm text-gray-500">Charities operate blindly, missing
+                                            opportunities to collect surplus food.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Visual -->
+                        <div class="reveal relative" style="transition-delay: 200ms;">
+                            <div
+                                class="relative aspect-square rounded-3xl overflow-hidden bg-[#111] border border-white/5">
+                                <img src="https://images.unsplash.com/photo-1543353071-873f17a7a088?w=800&q=80"
+                                    alt="Food waste" class="w-full h-full object-cover opacity-60">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent">
+                                </div>
+
+                                <!-- Floating Stat Card -->
+                                <div
+                                    class="absolute bottom-6 left-6 right-6 p-6 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <div class="text-3xl font-bold font-serif text-[#FF4500]">$940B</div>
+                                            <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Annual Food
+                                                Waste Cost</div>
+                                        </div>
+                                        <div
+                                            class="w-12 h-12 rounded-full bg-[#FF4500]/20 flex items-center justify-center">
+                                            <iconify-icon icon="lucide:trending-up"
+                                                class="text-[#FF4500] text-xl"></iconify-icon>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Decorative Element -->
+                            <div class="absolute -top-4 -right-4 w-24 h-24 border border-[#FF4500]/20 rounded-full">
+                            </div>
+                            <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-[#FF4500]/10 rounded-full blur-xl">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Solution Section -->
+        <section id="solution" class="py-32 relative overflow-hidden">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-5 pointer-events-none"
+                style="background-image: radial-gradient(circle, #FF4500 1px, transparent 1px); background-size: 60px 60px;">
+            </div>
+
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 mb-6">
+                        <iconify-icon icon="lucide:lightbulb" class="text-[#FF4500] text-sm"></iconify-icon>
+                        <span class="text-xs uppercase tracking-widest text-[#FF4500]">Our Solution</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl leading-tight text-white/90 mb-6 font-serif">
+                        A smart ecosystem that <span class="italic gradient-text">connects everyone.</span>
+                    </h2>
+                    <p class="text-lg text-gray-400">
+                        LastBite bridges the gap between surplus and scarcity with real-time technology.
+                    </p>
+                </div>
+
+                <!-- Three Cards -->
+                <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto stagger-children" id="solution-cards">
+                    <!-- Restaurant Card -->
+                    <div
+                        class="group card-hover bg-[#111] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-[#FF4500]/5 rounded-full blur-3xl group-hover:bg-[#FF4500]/10 transition-colors">
+                        </div>
+
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-[#FF4500]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <iconify-icon icon="lucide:store" class="text-[#FF4500] text-2xl"></iconify-icon>
+                        </div>
+
+                        <h3 class="text-2xl font-serif mb-3">For Restaurants</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                            List surplus food at the end of the day. Recover costs, reduce waste, and build community
+                            goodwill.
+                        </p>
+
+                        <div class="flex items-center gap-2 text-[#FF4500] text-sm font-medium">
+                            <span>Reduce waste by 80%</span>
+                            <iconify-icon icon="lucide:arrow-up-right"
+                                class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <!-- User Card -->
+                    <div
+                        class="group card-hover bg-[#111] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors">
+                        </div>
+
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <iconify-icon icon="lucide:user" class="text-green-400 text-2xl"></iconify-icon>
+                        </div>
+
+                        <h3 class="text-2xl font-serif mb-3">For Diners</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                            Discover quality meals at 50-70% off. Browse nearby listings with live countdown timers and
+                            secure your dinner.
+                        </p>
+
+                        <div class="flex items-center gap-2 text-green-400 text-sm font-medium">
+                            <span>Save up to 70% on meals</span>
+                            <iconify-icon icon="lucide:arrow-up-right"
+                                class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></iconify-icon>
+                        </div>
+                    </div>
+
+                    <!-- NGO Card -->
+                    <div
+                        class="group card-hover bg-[#111] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
+                        <div
+                            class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors">
+                        </div>
+
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <iconify-icon icon="lucide:heart-handshake" class="text-blue-400 text-2xl"></iconify-icon>
+                        </div>
+
+                        <h3 class="text-2xl font-serif mb-3">For NGOs</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                            Receive automatic alerts for unsold food. Real-time notifications ensure nothing goes to
+                            waste.
+                        </p>
+
+                        <div class="flex items-center gap-2 text-blue-400 text-sm font-medium">
+                            <span>Real-time food alerts</span>
+                            <iconify-icon icon="lucide:arrow-up-right"
+                                class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="py-32 relative">
+            <div class="container mx-auto px-6">
+                <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 mb-6">
+                        <iconify-icon icon="lucide:settings" class="text-gray-400 text-sm"></iconify-icon>
+                        <span class="text-xs uppercase tracking-widest text-gray-400">How It Works</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl leading-tight text-white/90 mb-6 font-serif">
+                        Three simple steps to <span class="italic gradient-text">zero waste.</span>
+                    </h2>
+                </div>
+
+                <div class="max-w-5xl mx-auto space-y-12">
+                    <!-- Step 1 -->
+                    <div class="reveal grid md:grid-cols-2 gap-8 items-center">
+                        <div class="order-2 md:order-1">
+                            <div
+                                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#FF4500] text-white font-bold text-lg mb-4">
+                                1</div>
+                            <h3 class="text-3xl font-serif mb-4">Restaurant Listing</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6">
+                                At the end of the day, restaurants snap a photo and list surplus items with original
+                                price,
+                                discounted price, and pickup time window. AI suggests optimal pricing.
+                            </p>
+                            <div class="flex gap-3">
+                                <span class="px-3 py-1 rounded-full bg-[#FF4500]/10 text-[#FF4500] text-xs">Photo
+                                    Upload</span>
+                                <span class="px-3 py-1 rounded-full bg-[#FF4500]/10 text-[#FF4500] text-xs">Smart
+                                    Pricing</span>
+                                <span
+                                    class="px-3 py-1 rounded-full bg-[#FF4500]/10 text-[#FF4500] text-xs">Auto-Expiry</span>
+                            </div>
+                        </div>
+                        <div class="order-1 md:order-2">
+                            <div
+                                class="aspect-[4/3] rounded-3xl overflow-hidden bg-[#111] border border-white/5 relative">
+                                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80"
+                                    alt="Restaurant" class="w-full h-full object-cover opacity-70">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent">
+                                </div>
+
+                                <!-- Mock UI Overlay -->
+                                <div
+                                    class="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-[#FF4500] flex items-center justify-center">
+                                            <iconify-icon icon="lucide:camera" class="text-white"></iconify-icon>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="text-sm font-medium">Add Surplus Item</div>
+                                            <div class="text-xs text-gray-500">2 items listed today</div>
+                                        </div>
+                                        <div class="text-[#FF4500] font-bold">-$12</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="reveal grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <div
+                                class="aspect-[4/3] rounded-3xl overflow-hidden bg-[#111] border border-white/5 relative">
+                                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80"
+                                    alt="Food discovery" class="w-full h-full object-cover opacity-70">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent">
+                                </div>
+
+                                <!-- Mock Timer Overlay -->
+                                <div
+                                    class="absolute top-4 right-4 px-4 py-2 rounded-full bg-[#FF4500] text-white text-sm font-bold flex items-center gap-2">
+                                    <iconify-icon icon="lucide:clock" class="text-xs"></iconify-icon>
+                                    <span class="timer-digit">23:45</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div
+                                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#FF4500] text-white font-bold text-lg mb-4">
+                                2</div>
+                            <h3 class="text-3xl font-serif mb-4">User Discovery</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6">
+                                Users browse nearby listings on an interactive map. Each item shows a live countdown
+                                timer.
+                                Purchase with one tap and pick up before the timer expires.
+                            </p>
+                            <div class="flex gap-3">
+                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Live
+                                    Map</span>
+                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Countdown
+                                    Timer</span>
+                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">One-Tap
+                                    Buy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="reveal grid md:grid-cols-2 gap-8 items-center">
+                        <div class="order-2 md:order-1">
+                            <div
+                                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#FF4500] text-white font-bold text-lg mb-4">
+                                3</div>
+                            <h3 class="text-3xl font-serif mb-4">NGO Collection</h3>
+                            <p class="text-gray-400 leading-relaxed mb-6">
+                                When the timer hits zero, unsold items automatically alert nearby NGOs.
+                                Charities receive detailed pickup instructions and real-time availability updates.
+                            </p>
+                            <div class="flex gap-3">
+                                <span
+                                    class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs">Auto-Alerts</span>
+                                <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs">Route
+                                    Optimized</span>
+                                <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs">Impact
+                                    Tracking</span>
+                            </div>
+                        </div>
+                        <div class="order-1 md:order-2">
+                            <div
+                                class="aspect-[4/3] rounded-3xl overflow-hidden bg-[#111] border border-white/5 relative">
+                                <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&q=80"
+                                    alt="NGO donation" class="w-full h-full object-cover opacity-70">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent">
+                                </div>
+
+                                <!-- Mock Alert Overlay -->
+                                <div
+                                    class="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-blue-500/20 backdrop-blur-xl border border-blue-500/30">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+                                            <iconify-icon icon="lucide:bell" class="text-white"></iconify-icon>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="text-sm font-medium text-blue-300">New Food Available</div>
+                                            <div class="text-xs text-blue-400/70">Bistro Central — 5 meals</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Listings Preview -->
+        <section class="py-32 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[#0a0a0a]"></div>
+
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal">
+                    <div>
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/30 bg-green-500/10 mb-4">
+                            <span class="w-2 h-2 rounded-full bg-green-400 pulse-live"></span>
+                            <span class="text-xs uppercase tracking-widest text-green-400">Live Now</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-serif">Nearby Surplus <span
+                                class="italic gradient-text">Listings</span></h2>
+                    </div>
+                    <a href="#"
+                        class="mt-4 md:mt-0 inline-flex items-center gap-2 text-[#FF4500] hover:gap-3 transition-all">
+                        <span class="text-sm font-medium">View All</span>
+                        <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+                    </a>
+                </div>
+
+                <!-- Listing Cards -->
+                <div class="grid md:grid-cols-3 gap-6 stagger-children" id="listings">
+                    <div class="col-span-full text-center py-20">
+                        <div
+                            class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#FF4500]">
+                        </div>
+                        <p class="mt-4 text-gray-500">Loading nearby surplus food...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Restaurant Dashboard (Hidden by default) -->
+        <div id="restaurant-dashboard"
+            class="hidden py-32 bg-[#050505] border-y border-white/5 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[#FF4500]/5 opacity-30"></div>
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                    <div>
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 mb-4">
+                            <iconify-icon icon="lucide:layout-dashboard" class="text-[#FF4500] text-sm"></iconify-icon>
+                            <span class="text-xs uppercase tracking-widest text-[#FF4500]">Management</span>
+                        </div>
+                        <h2 class="text-4xl md:text-5xl font-serif">Restaurant <span
+                                class="italic gradient-text">Dashboard</span></h2>
+                        <p class="text-gray-400 mt-2">Upload surplus items and track your impact.</p>
+                    </div>
+                    <button onclick="toggleUploadModal()"
+                        class="mt-8 md:mt-0 px-8 py-4 rounded-full bg-[#FF4500] text-white font-semibold hover:scale-105 transition-all flex items-center gap-2 glow-accent-hover">
+                        <iconify-icon icon="lucide:plus-circle" class="text-xl"></iconify-icon>
+                        List Surplus Food
+                    </button>
+                </div>
+                <div id="my-listings" class="grid md:grid-cols-4 gap-6 stagger-children"></div>
+            </div>
+        </div>
+
+
+        <!-- Impact Section -->
+        <section id="impact" class="py-32 relative">
+            <div class="container mx-auto px-6">
+                <div class="max-w-6xl mx-auto">
+                    <div class="grid md:grid-cols-2 gap-16 items-center">
+                        <!-- Left: Stats -->
+                        <div class="reveal">
+                            <div
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 mb-6">
+                                <iconify-icon icon="lucide:bar-chart-3" class="text-[#FF4500] text-sm"></iconify-icon>
+                                <span class="text-xs uppercase tracking-widest text-[#FF4500]">Our Impact</span>
+                            </div>
+
+                            <h2 class="text-4xl md:text-5xl lg:text-6xl leading-tight text-white/90 mb-8 font-serif">
+                                Real numbers. <span class="italic gradient-text">Real change.</span>
+                            </h2>
+
+                            <p class="text-lg text-gray-400 leading-relaxed mb-12">
+                                Every transaction on LastBite contributes to a larger mission.
+                                Here's what we've achieved together with our community.
+                            </p>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="p-6 rounded-2xl bg-[#111] border border-white/5">
+                                    <div class="text-4xl font-bold font-serif text-[#FF4500] mb-2">12,450</div>
+                                    <div class="text-sm text-gray-500">Meals Saved from Waste</div>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-[#111] border border-white/5">
+                                    <div class="text-4xl font-bold font-serif text-white mb-2">$186K</div>
+                                    <div class="text-sm text-gray-500">User Savings Generated</div>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-[#111] border border-white/5">
+                                    <div class="text-4xl font-bold font-serif text-white mb-2">3,200</div>
+                                    <div class="text-sm text-gray-500">KG CO₂ Prevented</div>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-[#111] border border-white/5">
+                                    <div class="text-4xl font-bold font-serif text-[#FF4500] mb-2">48</div>
+                                    <div class="text-sm text-gray-500">NGO Partners Active</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Visual -->
+                        <div class="reveal relative" style="transition-delay: 200ms;">
+                            <div
+                                class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-[#111] border border-white/5">
+                                <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&q=80"
+                                    alt="Community impact" class="w-full h-full object-cover opacity-60">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent">
+                                </div>
+
+                                <!-- Impact Card Overlay -->
+                                <div class="absolute bottom-6 left-6 right-6 space-y-3">
+                                    <div class="p-4 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                                                <iconify-icon icon="lucide:leaf" class="text-green-400"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium">Eco Impact</div>
+                                                <div class="text-xs text-gray-500">Equivalent to planting 150 trees
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-4 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-[#FF4500]/20 flex items-center justify-center">
+                                                <iconify-icon icon="lucide:users" class="text-[#FF4500]"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <div class="text-sm font-medium">Community</div>
+                                                <div class="text-xs text-gray-500">2,400+ active food rescuers</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-32 relative overflow-hidden">
+            <div class="absolute inset-0 bg-[#FF4500]/5"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] bg-[#FF4500]/10 rounded-full blur-[150px]">
+            </div>
+
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="max-w-3xl mx-auto text-center reveal">
+                    <h2 class="text-4xl md:text-6xl lg:text-7xl leading-tight text-white/90 mb-8 font-serif">
+                        Ready to make every <span class="italic gradient-text">bite count?</span>
+                    </h2>
+                    <p class="text-lg text-gray-400 mb-12 max-w-xl mx-auto">
+                        Join thousands of restaurants, diners, and NGOs already fighting food waste together.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="#"
+                            class="group inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-semibold bg-[#FF4500] text-white hover:scale-105 transition-all duration-300 glow-accent-hover">
+                            <span>Join as Restaurant</span>
+                            <iconify-icon icon="lucide:arrow-right"
+                                class="ml-2 group-hover:translate-x-1 transition-transform"></iconify-icon>
+                        </a>
+                        <a href="#"
+                            class="inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-medium border border-white/20 text-white hover:bg-white/5 transition-all duration-300">
+                            <iconify-icon icon="lucide:search" class="mr-2"></iconify-icon>
+                            Browse Listings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-20 border-t border-white/5 bg-[#050505] relative overflow-hidden">
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="grid md:grid-cols-4 gap-12 mb-16">
+                    <!-- Brand -->
+                    <div class="md:col-span-2">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-xl bg-[#FF4500] flex items-center justify-center">
+                                <iconify-icon icon="lucide:leaf" class="text-white text-xl"></iconify-icon>
+                            </div>
+                            <span class="text-2xl font-bold tracking-tighter font-serif">LastBite.</span>
+                        </div>
+                        <p class="text-gray-500 max-w-sm leading-relaxed mb-6">
+                            Turning food waste into opportunity. Connecting restaurants, diners, and NGOs for a
+                            zero-waste future.
+                        </p>
+                        <div class="flex gap-4">
+                            <a href="#"
+                                class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#FF4500] transition-colors">
+                                <iconify-icon icon="lucide:instagram" class="text-white"></iconify-icon>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#FF4500] transition-colors">
+                                <iconify-icon icon="lucide:twitter" class="text-white"></iconify-icon>
+                            </a>
+                            <a href="#"
+                                class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#FF4500] transition-colors">
+                                <iconify-icon icon="lucide:linkedin" class="text-white"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Links -->
+                    <div>
+                        <h4 class="font-medium mb-4 text-white">Platform</h4>
+                        <div class="flex flex-col gap-3 text-gray-500">
+                            <a href="#" class="hover:text-white transition-colors">For Restaurants</a>
+                            <a href="#" class="hover:text-white transition-colors">For Diners</a>
+                            <a href="#" class="hover:text-white transition-colors">For NGOs</a>
+                            <a href="#" class="hover:text-white transition-colors">How It Works</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-medium mb-4 text-white">Company</h4>
+                        <div class="flex flex-col gap-3 text-gray-500">
+                            <a href="#" class="hover:text-white transition-colors">About Us</a>
+                            <a href="#" class="hover:text-white transition-colors">Impact Report</a>
+                            <a href="#" class="hover:text-white transition-colors">Careers</a>
+                            <a href="#" class="hover:text-white transition-colors">Contact</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-sm text-gray-600">© 2026 LastBite. All rights reserved.</p>
+                    <div class="flex gap-6 text-sm text-gray-600">
+                        <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                        <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 1. Reveal on Scroll
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // 2. Stagger Children Animation
+        const staggerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.2 });
+
+        document.querySelectorAll('.stagger-children').forEach(el => staggerObserver.observe(el));
+
+        // 3. Navbar Scroll Effect
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
+                nav.classList.remove('py-6', 'bg-transparent');
+            } else {
+                nav.classList.remove('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
+                nav.classList.add('py-6', 'bg-transparent');
+            }
+        });
+
+        // 4. Hero Parallax Fade
+        const heroContent = document.getElementById('hero-content');
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            if (scrolled < 800) {
+                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+                heroContent.style.opacity = Math.max(0, 1 - scrolled / 500);
+            }
+        });
+
+        // 5. Countdown Timer Simulation
+        function updateTimers() {
+            document.querySelectorAll('.timer-digit').forEach(timer => {
+                let text = timer.textContent;
+                let [mins, secs] = text.split(':').map(Number);
+
+                if (secs > 0) {
+                    secs--;
+                } else if (mins > 0) {
+                    mins--;
+                    secs = 59;
+                }
+
+                timer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            });
+        }
+        setInterval(updateTimers, 1000);
+    </script>
+
+    <!-- Restaurant Portal Section -->
+    <section id="restaurant-dashboard" class="py-32 bg-[#050505] border-y border-white/5 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[#FF4500]/5 opacity-30"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <!-- Portal Header -->
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 mb-4">
+                        <iconify-icon icon="lucide:layout-dashboard" class="text-[#FF4500] text-sm"></iconify-icon>
+                        <span class="text-xs uppercase tracking-widest text-[#FF4500]">Management</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-serif">Restaurant <span class="italic gradient-text">Portal</span></h2>
+                    <p class="text-gray-400 mt-2">List your surplus food items with ease - set discounts, expiry times, and watch the impact grow!</p>
+                </div>
+                <button onclick="toggleUploadForm()" class="mt-8 md:mt-0 px-8 py-4 rounded-full bg-[#FF4500] text-white font-semibold hover:scale-105 transition-all flex items-center gap-2 glow-accent-hover">
+                    <iconify-icon icon="lucide:plus-circle" class="text-xl"></iconify-icon>
+                    List New Surplus Item
+                </button>
+            </div>
+
+            <!-- Inline Listing Form (Hidden by default) -->
+            <div id="inline-upload-form" class="hidden mb-20 reveal">
+                <div class="max-w-4xl mx-auto bg-[#111] border border-white/10 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-[#FF4500]/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
+                    
+                    <div class="flex justify-between items-center mb-10">
+                        <h3 class="text-3xl font-serif">List Your Surplus Food Item</h3>
+                        <button onclick="toggleUploadForm()" class="text-gray-500 hover:text-white transition-colors">
+                            <iconify-icon icon="lucide:x" class="text-2xl"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <form id="upload-form-inline" class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Food Item Name</label>
+                                <input type="text" id="food-name-inline" required placeholder="e.g., Biryani, Pizza, Salad"
+                                    class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Quantity Available</label>
+                                <input type="text" id="food-quantity-inline" required placeholder="Number of portions"
+                                    class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Original Price (₹)</label>
+                                    <input type="number" id="food-original-price-inline" required placeholder="Regular price"
+                                        class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Discounted Price (₹)</label>
+                                    <input type="number" id="food-price-inline" required placeholder="Special price"
+                                        class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Available Until</label>
+                                <input type="datetime-local" id="food-expiry-inline" required
+                                    class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all text-gray-400">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Description (Optional)</label>
+                                <textarea id="food-desc-inline" rows="4" placeholder="Any special details about this item..."
+                                    class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700 resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2 flex items-center gap-4 pt-4">
+                            <button type="submit" class="flex-1 py-4 rounded-2xl bg-[#FF4500] text-white font-bold hover:bg-[#ff5722] transition-all glow-accent-hover">
+                                List Item
+                            </button>
+                            <button type="button" onclick="toggleUploadForm()" class="px-8 py-4 rounded-2xl border border-white/10 text-white font-medium hover:bg-white/5 transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Active Listings Header -->
+            <div class="mb-10 reveal">
+                <h3 class="text-2xl font-serif">Active <span class="italic gradient-text">Listings</span></h3>
+            </div>
+
+            <!-- Listings Grid -->
+            <div id="my-listings" class="grid md:grid-cols-4 gap-6 stagger-children">
+                <!-- Items will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleAuthModal()"></div>
+        <div class="relative w-full max-w-md bg-[#111] border border-white/10 rounded-3xl p-8 shadow-2xl">
+            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white">
+                <iconify-icon icon="lucide:x" class="text-xl"></iconify-icon>
+            </button>
+
+            <div class="text-center mb-8">
+                <h3 id="modal-title" class="text-3xl font-serif mb-2">Restaurant Login</h3>
+                <p id="modal-subtitle" class="text-gray-400 text-sm">Sign in to manage your surplus food</p>
+            </div>
+
+            <form id="auth-form" class="space-y-4">
+                <div id="name-field" class="hidden">
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1.5 ml-1">Restaurant
+                        Name</label>
+                    <input type="text" id="auth-name" placeholder="Bistro Central"
+                        class="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-[#FF4500] focus:outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1.5 ml-1">Email
+                        Address</label>
+                    <input type="email" id="auth-email" required placeholder="manager@restaurant.com"
+                        class="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-[#FF4500] focus:outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1.5 ml-1">Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••"
+                        class="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-[#FF4500] focus:outline-none transition-colors">
+                </div>
+                <button type="submit" id="auth-submit"
+                    class="w-full py-4 rounded-xl bg-[#FF4500] text-white font-semibold hover:bg-[#ff5722] transition-all duration-300 mt-4 glow-accent-hover">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-8 text-center text-sm">
+                <span id="toggle-text" class="text-gray-500">New restaurant?</span>
+                <button onclick="toggleAuthMode()" id="toggle-btn"
+                    class="text-[#FF4500] font-medium ml-1 hover:underline">Register your business</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let isLoginMode = true;
+
+        // --- Core Animations ---
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        const staggerObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.stagger-children').forEach(el => staggerObserver.observe(el));
+
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
+            } else {
+                nav.classList.remove('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
+            }
+        });
+
+        // --- Modals & UI ---
+        const authModal = document.getElementById('auth-modal');
+        const uploadFormInline = document.getElementById('inline-upload-form');
+        const dashboard = document.getElementById('restaurant-dashboard');
+
+        function toggleAuthModal() {
+            authModal.classList.toggle('hidden');
+            authModal.classList.toggle('flex');
+        }
+
+        function toggleUploadForm() {
+            // For demo purposes, we'll allow toggling without a token
+            // if (!localStorage.getItem('token')) return toggleAuthModal();
+            uploadFormInline.classList.toggle('hidden');
+            if (!uploadFormInline.classList.contains('hidden')) {
+                uploadFormInline.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('modal-title').textContent = isLoginMode ? 'Restaurant Login' : 'Join LastBite';
+            document.getElementById('name-field').classList.toggle('hidden');
+            document.getElementById('auth-submit').textContent = isLoginMode ? 'Sign In' : 'Register Restaurant';
+        }
+
+        // --- API Integration ---
+        async function fetchAllFood() {
+            try {
+                const res = await fetch(`${API_URL}/food`);
+                const foods = await res.json();
+                renderListings(foods, 'listings');
+                
+                // If logged in as restaurant, fetch their listings too
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (user && user.role === 'restaurant') {
+                    try {
+                        const myRes = await fetch(`${API_URL}/food/restaurant`, {
+                            headers: { 'Authorization': localStorage.getItem('token') }
+                        });
+                        const myFoods = await myRes.json();
+                        renderListings(myFoods, 'my-listings');
+                    } catch (e) {
+                        console.error('Error fetching restaurant listings:', e);
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching food:', err);
+            }
+        }
+
+        function renderListings(foods, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            if (foods.length === 0) {
+                container.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10 italic">No active listings found.</p>';
+                return;
+            }
+
+            container.innerHTML = foods.map(food => {
+                const discount = Math.round(((food.originalPrice - food.price) / food.originalPrice) * 100);
+                const imageUrl = food.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80';
+                return `
+                    <div class="group bg-[#111] border border-white/5 rounded-3xl overflow-hidden card-hover">
+                        <div class="relative aspect-[4/3] overflow-hidden">
+                            <img src="${imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#FF4500] text-white text-xs font-bold">-${discount}%</div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-medium text-lg">${food.name}</h4>
+                                <div class="text-right">
+                                    <div class="text-[#FF4500] font-bold">₹${food.price}</div>
+                                    <div class="text-xs text-gray-500 line-through">₹${food.originalPrice}</div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-4 flex items-center gap-1">
+                                <iconify-icon icon="lucide:map-pin"></iconify-icon>
+                                ${food.restaurant?.name || 'Local Restaurant'}
+                            </p>
+                            <button onclick="reserveFood('${food._id}')" class="w-full py-3 rounded-xl bg-[#FF4500]/10 text-[#FF4500] text-sm font-semibold hover:bg-[#FF4500] hover:text-white transition-all duration-300">
+                                Reserve Now
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function reserveFood(id) {
+            alert('Reservation successful! Please collect your food within the next hour.');
+        }
+
+        // Handle Login/Register
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value;
+
+            const endpoint = isLoginMode ? '/auth/login' : '/auth/register';
+            const body = isLoginMode ? { email, password } : { name, email, password, role: 'restaurant' };
+
+            try {
+                const res = await fetch(`${API_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    toggleAuthModal();
+                    updateUI(data.user);
+                    fetchAllFood();
+                } else {
+                    alert(data.msg);
+                }
+            } catch (err) {
+                alert('Connection error. Is the server running?');
+            }
+        });
+
+        // Handle Inline Food Upload
+        document.getElementById('upload-form-inline').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const foodData = {
+                name: document.getElementById('food-name-inline').value,
+                originalPrice: Number(document.getElementById('food-original-price-inline').value),
+                price: Number(document.getElementById('food-price-inline').value),
+                quantity: document.getElementById('food-quantity-inline').value,
+                expiryTime: document.getElementById('food-expiry-inline').value,
+                description: document.getElementById('food-desc-inline').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/food`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(foodData)
+                });
+
+                if (res.ok) {
+                    alert('Food listed successfully!');
+                    toggleUploadForm();
+                    fetchAllFood();
+                } else {
+                    const data = await res.json();
+                    alert(data.msg);
+                }
+            } catch (err) {
+                alert('Failed to upload. Check server connection.');
+            }
+        });
+
+        function updateUI(user) {
+            const navBtn = document.getElementById('get-started-nav');
+            if (user && user.role === 'restaurant') {
+                dashboard.classList.remove('hidden');
+                navBtn.textContent = 'Logout';
+                navBtn.onclick = (e) => { 
+                    e.preventDefault();
+                    localStorage.clear(); 
+                    window.location.reload(); 
+                };
+            }
+        }
+
+        // Init
+        const savedUser = JSON.parse(localStorage.getItem('user'));
+        if (savedUser) updateUI(savedUser);
+        fetchAllFood();
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                const id = this.id;
+                
+                if (href === '#' || href === '') {
+                    e.preventDefault();
+                    const isLoggedIn = localStorage.getItem('token');
+                    if ((id === 'signin-btn' || id === 'get-started-nav' || id === 'hero-get-started') && !isLoggedIn) {
+                        toggleAuthModal();
+                    }
+                    return;
+                }
+                const target = document.querySelector(href);
+                if (target) { 
+                    e.preventDefault(); 
+                    target.scrollIntoView({ behavior: 'smooth' }); 
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
