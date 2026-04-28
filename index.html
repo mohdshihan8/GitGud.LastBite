@@ -19,6 +19,10 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
 
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -188,6 +192,26 @@
             font-variant-numeric: tabular-nums;
         }
 
+        /* Dark Leaflet Theme */
+        .leaflet-container {
+            background: #050505 !important;
+            border-radius: 24px;
+        }
+        .leaflet-tile-pane {
+            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+        }
+        .leaflet-control-attribution {
+            display: none;
+        }
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: #111 !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timer-digit {
+            font-variant-numeric: tabular-nums;
+        }
+
         /* Smooth Image Reveal */
         .img-reveal {
             clip-path: inset(0 100% 0 0);
@@ -260,13 +284,15 @@
                         class="text-sm text-gray-400 hover:text-white transition-colors duration-300">How It Works</a>
                     <a href="#impact"
                         class="text-sm text-gray-400 hover:text-white transition-colors duration-300">Impact</a>
+                    <a href="#ngo-alerts"
+                        class="text-sm text-gray-400 hover:text-white transition-colors duration-300">NGO Alerts</a>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <a href="#" id="signin-btn"
+                    <a href="javascript:void(0)" onclick="toggleAuthModal('login')" id="signin-btn"
                         class="hidden sm:inline-flex text-sm text-gray-400 hover:text-white transition-colors">Sign
                         In</a>
-                    <a href="#" id="get-started-nav"
+                    <a href="javascript:void(0)" onclick="toggleAuthModal('register')" id="get-started-nav"
                         class="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-sm font-medium bg-[#FF4500] text-white hover:scale-105 hover:bg-[#ff5722] transition-all duration-300 glow-accent-hover">
                         Get Started
                     </a>
@@ -340,7 +366,7 @@
                     <!-- CTA Buttons -->
                     <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4"
                         style="transition-delay: 300ms;">
-                        <a href="#" id="hero-get-started"
+                        <a href="javascript:void(0)" onclick="toggleAuthModal('register')" id="hero-get-started"
                             class="group relative inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-semibold bg-[#FF4500] text-white hover:scale-105 transition-all duration-300 glow-accent-hover">
                             <span>Start Saving Food</span>
                             <iconify-icon icon="lucide:arrow-right"
@@ -453,7 +479,7 @@
                                     class="absolute bottom-6 left-6 right-6 p-6 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <div class="text-3xl font-bold font-serif text-[#FF4500]">$940B</div>
+                                            <div class="text-3xl font-bold font-serif text-[#FF4500]">₹78,000 Crore</div>
                                             <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Annual Food
                                                 Waste Cost</div>
                                         </div>
@@ -624,20 +650,20 @@
                                     class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent">
                                 </div>
 
-                                <!-- Mock UI Overlay -->
-                                <div
-                                    class="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10">
+                                <!-- Interactive Mock UI Button -->
+                                <button onclick="toggleUploadForm()"
+                                    class="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-[#111]/90 backdrop-blur-xl border border-white/10 text-left hover:bg-[#FF4500]/10 transition-all group active:scale-95">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-xl bg-[#FF4500] flex items-center justify-center">
-                                            <iconify-icon icon="lucide:camera" class="text-white"></iconify-icon>
+                                        <div class="w-10 h-10 rounded-xl bg-[#FF4500] flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <iconify-icon icon="lucide:camera" class="text-white text-xl"></iconify-icon>
                                         </div>
                                         <div class="flex-1">
                                             <div class="text-sm font-medium">Add Surplus Item</div>
                                             <div class="text-xs text-gray-500">2 items listed today</div>
                                         </div>
-                                        <div class="text-[#FF4500] font-bold">-$12</div>
+                                        <div class="text-[#FF4500] font-bold">₹1,000</div>
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -646,18 +672,22 @@
                     <div class="reveal grid md:grid-cols-2 gap-8 items-center">
                         <div>
                             <div
-                                class="aspect-[4/3] rounded-3xl overflow-hidden bg-[#111] border border-white/5 relative">
-                                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80"
-                                    alt="Food discovery" class="w-full h-full object-cover opacity-70">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent">
+                                class="aspect-[4/3] rounded-3xl overflow-hidden bg-[#111] border border-white/5 relative shadow-2xl">
+                                <div id="discovery-map" class="w-full h-full z-0"></div>
+                                
+                                <!-- Map Overlay UI -->
+                                <div class="absolute top-4 left-4 z-[1000] flex flex-col gap-2">
+                                    <div class="px-4 py-2 rounded-full bg-[#FF4500]/90 backdrop-blur-md text-white text-[10px] uppercase tracking-widest font-bold flex items-center gap-2">
+                                        <span class="w-2 h-2 rounded-full bg-white pulse-live"></span>
+                                        Live Food Map
+                                    </div>
                                 </div>
 
                                 <!-- Mock Timer Overlay -->
                                 <div
-                                    class="absolute top-4 right-4 px-4 py-2 rounded-full bg-[#FF4500] text-white text-sm font-bold flex items-center gap-2">
-                                    <iconify-icon icon="lucide:clock" class="text-xs"></iconify-icon>
-                                    <span class="timer-digit">23:45</span>
+                                    class="absolute top-4 right-4 px-4 py-2 rounded-full bg-black/50 backdrop-blur-xl border border-white/10 text-white text-sm font-bold flex items-center gap-2 z-[1000]">
+                                    <iconify-icon icon="lucide:navigation" class="text-[#FF4500]"></iconify-icon>
+                                    <span class="text-xs">Nearby: 5 Items</span>
                                 </div>
                             </div>
                         </div>
@@ -665,19 +695,31 @@
                             <div
                                 class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#FF4500] text-white font-bold text-lg mb-4">
                                 2</div>
-                            <h3 class="text-3xl font-serif mb-4">User Discovery</h3>
-                            <p class="text-gray-400 leading-relaxed mb-6">
-                                Users browse nearby listings on an interactive map. Each item shows a live countdown
-                                timer.
-                                Purchase with one tap and pick up before the timer expires.
+                            <h3 class="text-3xl font-serif mb-6">User Discovery</h3>
+                            
+                            <p class="text-gray-400 leading-relaxed mb-8">
+                                Users browse nearby listings on an interactive map. Each item shows a live countdown timer. Purchase with one tap and pick up before the timer expires.
                             </p>
-                            <div class="flex gap-3">
-                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Live
-                                    Map</span>
-                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Countdown
-                                    Timer</span>
-                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">One-Tap
-                                    Buy</span>
+
+                            <div class="space-y-4 text-gray-400">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#FF4500]/10 flex items-center justify-center text-[#FF4500]">📍</div>
+                                    <span class="text-sm font-medium text-white">Live Map</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#FF4500]/10 flex items-center justify-center text-[#FF4500]">⏱️</div>
+                                    <span class="text-sm font-medium text-white">Countdown Timer</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-[#FF4500]/10 flex items-center justify-center text-[#FF4500]">🛒</div>
+                                    <span class="text-sm font-medium text-white">One-Tap Buy</span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 mt-10">
+                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Live Map</span>
+                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Countdown Timer</span>
+                                <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">One-Tap Buy</span>
                             </div>
                         </div>
                     </div>
@@ -732,7 +774,7 @@
         </section>
 
         <!-- Live Listings Preview -->
-        <section class="py-32 relative overflow-hidden">
+        <section id="listings-section" class="py-32 relative overflow-hidden">
             <div class="absolute inset-0 bg-[#0a0a0a]"></div>
 
             <div class="container mx-auto px-6 relative z-10">
@@ -765,31 +807,6 @@
             </div>
         </section>
 
-        <!-- Restaurant Dashboard (Hidden by default) -->
-        <div id="restaurant-dashboard"
-            class="hidden py-32 bg-[#050505] border-y border-white/5 relative overflow-hidden">
-            <div class="absolute inset-0 bg-[#FF4500]/5 opacity-30"></div>
-            <div class="container mx-auto px-6 relative z-10">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
-                    <div>
-                        <div
-                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#FF4500]/30 bg-[#FF4500]/10 mb-4">
-                            <iconify-icon icon="lucide:layout-dashboard" class="text-[#FF4500] text-sm"></iconify-icon>
-                            <span class="text-xs uppercase tracking-widest text-[#FF4500]">Management</span>
-                        </div>
-                        <h2 class="text-4xl md:text-5xl font-serif">Restaurant <span
-                                class="italic gradient-text">Dashboard</span></h2>
-                        <p class="text-gray-400 mt-2">Upload surplus items and track your impact.</p>
-                    </div>
-                    <button onclick="toggleUploadModal()"
-                        class="mt-8 md:mt-0 px-8 py-4 rounded-full bg-[#FF4500] text-white font-semibold hover:scale-105 transition-all flex items-center gap-2 glow-accent-hover">
-                        <iconify-icon icon="lucide:plus-circle" class="text-xl"></iconify-icon>
-                        List Surplus Food
-                    </button>
-                </div>
-                <div id="my-listings" class="grid md:grid-cols-4 gap-6 stagger-children"></div>
-            </div>
-        </div>
 
 
         <!-- Impact Section -->
@@ -820,7 +837,7 @@
                                     <div class="text-sm text-gray-500">Meals Saved from Waste</div>
                                 </div>
                                 <div class="p-6 rounded-2xl bg-[#111] border border-white/5">
-                                    <div class="text-4xl font-bold font-serif text-white mb-2">$186K</div>
+                                    <div class="text-4xl font-bold font-serif text-white mb-2">₹15,00,000</div>
                                     <div class="text-sm text-gray-500">User Savings Generated</div>
                                 </div>
                                 <div class="p-6 rounded-2xl bg-[#111] border border-white/5">
@@ -864,14 +881,88 @@
                                             <div
                                                 class="w-10 h-10 rounded-full bg-[#FF4500]/20 flex items-center justify-center">
                                                 <iconify-icon icon="lucide:users" class="text-[#FF4500]"></iconify-icon>
-                                            </div>
-                                            <div>
-                                                <div class="text-sm font-medium">Community</div>
-                                                <div class="text-xs text-gray-500">2,400+ active food rescuers</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                             </div>
+                                             <div>
+                                                 <div class="text-sm font-medium">Community</div>
+                                                 <div class="text-xs text-gray-500">2,400+ active food rescuers</div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NGO Alerts Section -->
+        <section id="ngo-alerts" class="py-32 relative bg-[#050505] border-y border-white/5 overflow-hidden">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-[#FF4500]/5 rounded-full blur-[120px]"></div>
+            <div class="container mx-auto px-6 relative z-10">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex flex-col md:flex-row items-center justify-between mb-12 reveal">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 mb-4">
+                                <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                                <span class="text-xs uppercase tracking-widest text-blue-400 font-bold">Urgent NGO Pickup</span>
+                            </div>
+                            <h2 class="text-4xl md:text-5xl font-serif">NGO <span class="italic gradient-text">Dashboard</span></h2>
+                        </div>
+                        <div class="text-right mt-4 md:mt-0">
+                            <div class="text-3xl font-bold font-serif text-blue-400">03</div>
+                            <div class="text-xs text-gray-500 uppercase tracking-widest">Items Expiring Soon</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 stagger-children">
+                        <!-- NGO Alert Item 1 -->
+                        <div class="p-6 rounded-3xl bg-[#111] border border-blue-500/10 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-blue-500/30 transition-all">
+                            <div class="flex items-center gap-6">
+                                <div class="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1512152272829-e3139592d56f?w=200&q=80" class="w-full h-full object-cover">
                                 </div>
+                                <div>
+                                    <h4 class="text-xl font-bold mb-1">Deluxe Veg Burger Pack</h4>
+                                    <p class="text-sm text-gray-500 flex items-center gap-1">
+                                        <iconify-icon icon="lucide:map-pin" class="text-[#FF4500]"></iconify-icon>
+                                        Bistro Central • 2.4 km away
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+                                <div class="text-center">
+                                    <div class="text-[#FF4500] font-mono font-bold text-lg">04:12</div>
+                                    <div class="text-[10px] text-gray-600 uppercase tracking-widest">Expiring In</div>
+                                </div>
+                                <button onclick="acceptNGOPickup('Bistro Central')" class="px-6 py-3 rounded-full bg-[#FF4500] text-white text-sm font-bold hover:scale-105 transition-all shadow-lg shadow-[#FF4500]/20">
+                                    Accept Pickup
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- NGO Alert Item 2 -->
+                        <div class="p-6 rounded-3xl bg-[#111] border border-blue-500/10 flex flex-col md:flex-row items-center justify-between gap-6 hover:border-blue-500/30 transition-all">
+                            <div class="flex items-center gap-6">
+                                <div class="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0">
+                                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=80" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold mb-1">Fresh Garden Salads (5x)</h4>
+                                    <p class="text-sm text-gray-500 flex items-center gap-1">
+                                        <iconify-icon icon="lucide:map-pin" class="text-[#FF4500]"></iconify-icon>
+                                        Green Leaf Cafe • 1.1 km away
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-8 w-full md:w-auto justify-between md:justify-end">
+                                <div class="text-center">
+                                    <div class="text-[#FF4500] font-mono font-bold text-lg">08:45</div>
+                                    <div class="text-[10px] text-gray-600 uppercase tracking-widest">Expiring In</div>
+                                </div>
+                                <button onclick="acceptNGOPickup('Green Leaf Cafe')" class="px-6 py-3 rounded-full bg-[#FF4500] text-white text-sm font-bold hover:scale-105 transition-all shadow-lg shadow-[#FF4500]/20">
+                                    Accept Pickup
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -896,13 +987,13 @@
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <a href="#"
+                        <a href="javascript:void(0)" onclick="toggleAuthModal('register')" id="cta-join-btn"
                             class="group inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-semibold bg-[#FF4500] text-white hover:scale-105 transition-all duration-300 glow-accent-hover">
                             <span>Join as Restaurant</span>
                             <iconify-icon icon="lucide:arrow-right"
                                 class="ml-2 group-hover:translate-x-1 transition-transform"></iconify-icon>
                         </a>
-                        <a href="#"
+                        <a href="#listings-section"
                             class="inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-medium border border-white/20 text-white hover:bg-white/5 transition-all duration-300">
                             <iconify-icon icon="lucide:search" class="mr-2"></iconify-icon>
                             Browse Listings
@@ -977,73 +1068,6 @@
         </footer>
     </div>
 
-    <script>
-        // 1. Reveal on Scroll
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-        // 2. Stagger Children Animation
-        const staggerObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.2 });
-
-        document.querySelectorAll('.stagger-children').forEach(el => staggerObserver.observe(el));
-
-        // 3. Navbar Scroll Effect
-        const nav = document.getElementById('main-nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
-                nav.classList.remove('py-6', 'bg-transparent');
-            } else {
-                nav.classList.remove('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
-                nav.classList.add('py-6', 'bg-transparent');
-            }
-        });
-
-        // 4. Hero Parallax Fade
-        const heroContent = document.getElementById('hero-content');
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            if (scrolled < 800) {
-                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
-                heroContent.style.opacity = Math.max(0, 1 - scrolled / 500);
-            }
-        });
-
-        // 5. Countdown Timer Simulation
-        function updateTimers() {
-            document.querySelectorAll('.timer-digit').forEach(timer => {
-                let text = timer.textContent;
-                let [mins, secs] = text.split(':').map(Number);
-
-                if (secs > 0) {
-                    secs--;
-                } else if (mins > 0) {
-                    mins--;
-                    secs = 59;
-                }
-
-                timer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            });
-        }
-        setInterval(updateTimers, 1000);
-    </script>
-
     <!-- Restaurant Portal Section -->
     <section id="restaurant-dashboard" class="py-32 bg-[#050505] border-y border-white/5 relative overflow-hidden">
         <div class="absolute inset-0 bg-[#FF4500]/5 opacity-30"></div>
@@ -1077,40 +1101,47 @@
                     </div>
 
                     <form id="upload-form-inline" class="grid md:grid-cols-2 gap-8">
+                        <!-- Left side: Basic Details & Photo -->
                         <div class="space-y-6">
+                            <!-- Simulated Camera/Photo Upload -->
+                            <div class="relative group cursor-pointer h-48 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center bg-black/40 hover:border-[#FF4500]/50 transition-all">
+                                <iconify-icon icon="lucide:camera" class="text-4xl text-gray-600 mb-2 group-hover:text-[#FF4500] group-hover:scale-110 transition-all"></iconify-icon>
+                                <span class="text-xs uppercase tracking-widest text-gray-500">Tap to Snap or Upload Photo</span>
+                                <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*">
+                            </div>
+
                             <div>
                                 <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Food Item Name</label>
                                 <input type="text" id="food-name-inline" required placeholder="e.g., Biryani, Pizza, Salad"
                                     class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
                             </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Quantity Available</label>
-                                <input type="text" id="food-quantity-inline" required placeholder="Number of portions"
-                                    class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
-                            </div>
+                        </div>
+
+                        <div class="space-y-6">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Original Price (₹)</label>
-                                    <input type="number" id="food-original-price-inline" required placeholder="Regular price"
+                                    <input type="number" id="food-original-price-inline" required placeholder="Regular"
                                         class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
                                 </div>
                                 <div>
                                     <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Discounted Price (₹)</label>
-                                    <input type="number" id="food-price-inline" required placeholder="Special price"
+                                    <input type="number" id="food-price-inline" required placeholder="Special"
                                         class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="space-y-6">
                             <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Available Until</label>
-                                <input type="datetime-local" id="food-expiry-inline" required
-                                    class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all text-gray-400">
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Quantity & Expiry</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <input type="text" id="food-quantity-inline" required placeholder="Portions"
+                                        class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700">
+                                    <input type="datetime-local" id="food-expiry-inline" required
+                                        class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all text-gray-400">
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 ml-1">Description (Optional)</label>
-                                <textarea id="food-desc-inline" rows="4" placeholder="Any special details about this item..."
+                                <textarea id="food-desc-inline" rows="3" placeholder="Special details..."
                                     class="w-full bg-[#050505] border border-white/5 rounded-2xl px-5 py-4 text-sm focus:border-[#FF4500] focus:outline-none transition-all placeholder:text-gray-700 resize-none"></textarea>
                             </div>
                         </div>
@@ -1142,7 +1173,7 @@
 
 
     <!-- Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div id="auth-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleAuthModal()"></div>
         <div class="relative w-full max-w-md bg-[#111] border border-white/10 rounded-3xl p-8 shadow-2xl">
             <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white">
@@ -1172,6 +1203,11 @@
                     <input type="password" id="auth-password" required placeholder="••••••••"
                         class="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-[#FF4500] focus:outline-none transition-colors">
                 </div>
+                <div id="mobile-field" class="hidden">
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1.5 ml-1">Mobile Number</label>
+                    <input type="tel" id="auth-mobile" placeholder="+91 98765 43210"
+                        class="w-full bg-[#050505] border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-[#FF4500] focus:outline-none transition-colors">
+                </div>
                 <button type="submit" id="auth-submit"
                     class="w-full py-4 rounded-xl bg-[#FF4500] text-white font-semibold hover:bg-[#ff5722] transition-all duration-300 mt-4 glow-accent-hover">
                     Sign In
@@ -1187,7 +1223,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        const API_URL = '/api';
         let isLoginMode = true;
 
         // --- Core Animations ---
@@ -1206,11 +1242,20 @@
         document.querySelectorAll('.stagger-children').forEach(el => staggerObserver.observe(el));
 
         const nav = document.getElementById('main-nav');
+        const heroContent = document.getElementById('hero-content');
+
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
                 nav.classList.add('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
             } else {
                 nav.classList.remove('py-4', 'bg-[#050505]/90', 'backdrop-blur-xl', 'border-b', 'border-white/5');
+            }
+
+            // Hero Parallax
+            const scrolled = window.scrollY;
+            if (scrolled < 800 && heroContent) {
+                heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+                heroContent.style.opacity = Math.max(0, 1 - scrolled / 500);
             }
         });
 
@@ -1218,15 +1263,34 @@
         const authModal = document.getElementById('auth-modal');
         const uploadFormInline = document.getElementById('inline-upload-form');
         const dashboard = document.getElementById('restaurant-dashboard');
+        let map;
+        let markers = [];
 
-        function toggleAuthModal() {
+        function initMap() {
+            if (map) return;
+            map = L.map('discovery-map', { zoomControl: false }).setView([12.9716, 77.5946], 13); // Default to Bangalore
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            // Add custom zoom control
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+        }
+
+        function toggleAuthModal(mode) {
+            if (mode === 'register' && isLoginMode) {
+                toggleAuthMode();
+            } else if (mode === 'login' && !isLoginMode) {
+                toggleAuthMode();
+            }
             authModal.classList.toggle('hidden');
             authModal.classList.toggle('flex');
         }
 
         function toggleUploadForm() {
-            // For demo purposes, we'll allow toggling without a token
-            // if (!localStorage.getItem('token')) return toggleAuthModal();
+            if (!localStorage.getItem('token')) {
+                alert('Please sign in or register to list surplus food.');
+                return toggleAuthModal('login');
+            }
+            
             uploadFormInline.classList.toggle('hidden');
             if (!uploadFormInline.classList.contains('hidden')) {
                 uploadFormInline.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1237,7 +1301,12 @@
             isLoginMode = !isLoginMode;
             document.getElementById('modal-title').textContent = isLoginMode ? 'Restaurant Login' : 'Join LastBite';
             document.getElementById('name-field').classList.toggle('hidden');
+            document.getElementById('mobile-field').classList.toggle('hidden');
             document.getElementById('auth-submit').textContent = isLoginMode ? 'Sign In' : 'Register Restaurant';
+            
+            // Toggle requirements
+            document.getElementById('auth-mobile').required = !isLoginMode;
+            document.getElementById('auth-name').required = !isLoginMode;
         }
 
         // --- API Integration ---
@@ -1274,14 +1343,50 @@
                 return;
             }
 
+            // Update Map Markers if it's the main discovery map
+            if (containerId === 'listings' && map) {
+                markers.forEach(m => map.removeLayer(m));
+                markers = [];
+                foods.forEach(food => {
+                    // Generate random coords nearby for demo if not present
+                    const lat = 12.9716 + (Math.random() - 0.5) * 0.05;
+                    const lng = 77.5946 + (Math.random() - 0.5) * 0.05;
+                    const marker = L.marker([lat, lng]).addTo(map)
+                        .bindPopup(`
+                            <div class="p-2">
+                                <b class="text-[#FF4500]">${food.name}</b><br>
+                                <span class="text-xs text-gray-400">₹${food.price} at ${food.restaurant?.name || 'Local'}</span>
+                            </div>
+                        `);
+                    markers.push(marker);
+                });
+                if (markers.length > 0) {
+                    const group = new L.featureGroup(markers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+            }
+
             container.innerHTML = foods.map(food => {
                 const discount = Math.round(((food.originalPrice - food.price) / food.originalPrice) * 100);
                 const imageUrl = food.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80';
+                
+                // Expiry Time Logic
+                const expiry = new Date(food.expiryTime).getTime();
+                const now = new Date().getTime();
+                const diff = Math.max(0, expiry - now);
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                const timerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
                 return `
-                    <div class="group bg-[#111] border border-white/5 rounded-3xl overflow-hidden card-hover">
+                    <div class="group bg-[#111] border border-white/5 rounded-3xl overflow-hidden card-hover reveal active">
                         <div class="relative aspect-[4/3] overflow-hidden">
                             <img src="${imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                             <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#FF4500] text-white text-xs font-bold">-${discount}%</div>
+                            <div class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-xs font-mono border border-white/10 flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                                <span class="timer-digit" data-expiry="${expiry}">${timerText}</span>
+                            </div>
                         </div>
                         <div class="p-5">
                             <div class="flex justify-between items-start mb-2">
@@ -1295,8 +1400,9 @@
                                 <iconify-icon icon="lucide:map-pin"></iconify-icon>
                                 ${food.restaurant?.name || 'Local Restaurant'}
                             </p>
-                            <button onclick="reserveFood('${food._id}')" class="w-full py-3 rounded-xl bg-[#FF4500]/10 text-[#FF4500] text-sm font-semibold hover:bg-[#FF4500] hover:text-white transition-all duration-300">
-                                Reserve Now
+                            <button onclick="reserveFood('${food._id}', this)" class="w-full py-3 rounded-xl bg-[#FF4500]/10 text-[#FF4500] text-sm font-semibold hover:bg-[#FF4500] hover:text-white transition-all duration-300 flex items-center justify-center gap-2">
+                                <span>Reserve Now</span>
+                                <iconify-icon icon="lucide:zap" class="text-lg"></iconify-icon>
                             </button>
                         </div>
                     </div>
@@ -1304,9 +1410,116 @@
             }).join('');
         }
 
-        async function reserveFood(id) {
-            alert('Reservation successful! Please collect your food within the next hour.');
+        async function reserveFood(id, btn) {
+            btn.disabled = true;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<iconify-icon icon="lucide:loader-2" class="animate-spin text-lg"></iconify-icon> Booking...';
+            
+            try {
+                const res = await fetch(`${API_URL}/food/reserve/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (res.ok) {
+                    btn.innerHTML = '<iconify-icon icon="lucide:check-circle" class="text-lg"></iconify-icon> Reserved!';
+                    btn.classList.remove('bg-[#FF4500]/10', 'text-[#FF4500]');
+                    btn.classList.add('bg-green-500', 'text-white');
+                    
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 z-[2000] bg-green-500 text-white px-8 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 animate-bounce-in border border-white/20 backdrop-blur-xl';
+                    toast.innerHTML = '<iconify-icon icon="lucide:party-popper"></iconify-icon> Reservation Instant! Pick up before expiry.';
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.classList.add('opacity-0', 'translate-y-10');
+                        setTimeout(() => toast.remove(), 500);
+                        fetchAllFood(); // Refresh listings
+                    }, 4000);
+                } else {
+                    const data = await res.json();
+                    alert(data.msg || 'Reservation failed.');
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                alert('Connection error. Is the server running?');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
         }
+
+        // Real-time Countdown Timer & NGO Logic
+        function updateTimers() {
+            document.querySelectorAll('.timer-digit').forEach(timer => {
+                const expiry = parseInt(timer.dataset.expiry);
+                if (!expiry) return;
+
+                const now = new Date().getTime();
+                const diff = Math.max(0, expiry - now);
+                
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                
+                timer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (diff === 0 && !timer.dataset.expiredAction) {
+                    timer.dataset.expiredAction = "true";
+                    timer.parentElement.classList.remove('bg-black/60');
+                    timer.parentElement.classList.add('bg-red-500');
+                    timer.textContent = "EXPIRED";
+                    
+                    // NGO Notification Logic
+                    const itemName = timer.closest('.group').querySelector('h4').textContent;
+                    showNGOAlert(itemName);
+                    
+                    // Remove card after a short delay
+                    setTimeout(() => {
+                        const card = timer.closest('.group');
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9)';
+                        setTimeout(() => card.remove(), 500);
+                    }, 5000);
+                }
+            });
+        }
+
+        function showNGOAlert(itemName) {
+            const container = document.body;
+            const alert = document.createElement('div');
+            alert.className = 'fixed top-24 right-6 z-[2000] max-w-sm bg-blue-600/90 backdrop-blur-xl border border-blue-400/50 p-4 rounded-2xl shadow-2xl animate-slide-in-right';
+            alert.innerHTML = `
+                <div class="flex items-start gap-3 text-white">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                        <iconify-icon icon="lucide:heart-handshake" class="text-xl"></iconify-icon>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold">NGO ALERT</div>
+                        <div class="text-xs opacity-90">${itemName} is now available for NGO collection.</div>
+                        <div class="text-[10px] mt-2 font-mono opacity-60">Status: Dispatched to nearby charities</div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(alert);
+            setTimeout(() => {
+                alert.classList.add('opacity-0', 'translate-x-10');
+                setTimeout(() => alert.remove(), 500);
+            }, 6000);
+        }
+
+        function acceptNGOPickup(restaurant) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] bg-[#FF4500] text-white px-8 py-4 rounded-full shadow-2xl font-bold flex items-center gap-3 animate-bounce-in border border-white/20 backdrop-blur-xl';
+            toast.innerHTML = `<iconify-icon icon="lucide:check-circle" class="text-xl"></iconify-icon> Pickup Confirmed! Head to ${restaurant} now ✅`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+        setInterval(updateTimers, 1000);
+        initMap();
 
         // Handle Login/Register
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
@@ -1314,9 +1527,10 @@
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const name = document.getElementById('auth-name').value;
+            const mobile = document.getElementById('auth-mobile').value;
 
             const endpoint = isLoginMode ? '/auth/login' : '/auth/register';
-            const body = isLoginMode ? { email, password } : { name, email, password, role: 'restaurant' };
+            const body = isLoginMode ? { email, password } : { name, email, password, role: 'restaurant', mobile };
 
             try {
                 const res = await fetch(`${API_URL}${endpoint}`, {
@@ -1399,18 +1613,18 @@
                 const href = this.getAttribute('href');
                 const id = this.id;
                 
+                if (href === 'javascript:void(0)') return;
+
                 if (href === '#' || href === '') {
                     e.preventDefault();
-                    const isLoggedIn = localStorage.getItem('token');
-                    if ((id === 'signin-btn' || id === 'get-started-nav' || id === 'hero-get-started') && !isLoggedIn) {
-                        toggleAuthModal();
-                    }
                     return;
                 }
-                const target = document.querySelector(href);
-                if (target) { 
-                    e.preventDefault(); 
-                    target.scrollIntoView({ behavior: 'smooth' }); 
+                if (href && href.startsWith('#') && href.length > 1) {
+                    const target = document.querySelector(href);
+                    if (target) { 
+                        e.preventDefault(); 
+                        target.scrollIntoView({ behavior: 'smooth' }); 
+                    }
                 }
             });
         });
